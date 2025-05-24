@@ -1,0 +1,6 @@
+- Start with making a virtual environment. Why? Because the more projects you work on, there is a chance that different versions of python or libraries or dependencies maybe need to be used.
+So we have independent group of libraries something which ensures that the libraries and dependencies do not clash with each other.
+
+py -3 -m venv .venv (Only for creating virtual environment)
+.venv\Scripts\activate (For activating the environment)
+deactivate (For exiting the environment)
