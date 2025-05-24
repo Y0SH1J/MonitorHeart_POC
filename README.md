@@ -65,3 +65,27 @@ git commit -m "Made some changes"
 
 # Push (if you have write access)
 git push origin main  # or 'master' depending on branch
+
+Use SSH Instead of HTTPS (No password prompts)
+
+    Check if you already have SSH keys
+
+ls ~/.ssh
+
+If you don’t have an id_rsa and id_rsa.pub, generate one:
+
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+Add your SSH key to GitHub
+
+    Copy your public key:
+
+    cat ~/.ssh/id_rsa.pub
+
+    Go to GitHub → Settings → SSH and GPG keys → New SSH key
+
+    Paste the key and save
+
+Clone the repo using SSH
+
+git clone git@github.com:username/repository.git
