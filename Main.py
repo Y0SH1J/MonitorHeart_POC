@@ -2,21 +2,17 @@
 
 import ECG_Heart
 
-import keyboard
+import threading
 import schedule #A simple to use API for scheduling jobs, made for humans
 import time
-from flask import Flask
+from flask import Flask, render_template, jsonify
 
 
 # GLOBAL CONSTANTS
 
-# FUNCTION DEFINITIONS
-
 app = Flask(__name__)
 
-@app.route("/")
-def hello_world():
-    return "<h1>Heart Rate Monitoring</h1>"
+# FUNCTION DEFINITIONS
 
 # CLASSES
 
@@ -58,42 +54,40 @@ class sensors_interface:
         # Checking heart rate
         self.check_ecg = self.ecg.generate_ecg()
         self.check_bpm = int(self.check_ecg[0])
-        self.parameter_check(120, 80, self.check_bpm, "Heart Rate")
-        user.user1.append(self.check_bpm)
+        #self.parameter_check(120, 80, self.check_bpm, "Heart Rate")
+        users.user1.append(self.check_bpm)
+        print(users.user1)
 
-# MAIN EXECUTION BLOCK
-def main():
+def run_schedule():
 
-    """Get continuous data from different devices"""
-    users = user()
-    sensors = sensors_interface()
-
-    # If you want to pass arguments to the function then use the following:
-    # import functools
-    # schedule.every(5).seconds.do(functools.partial(sensors.Heart_check, arg1, arg2))
-    # or
-    # schedule.every(5).seconds.do(lambda: sensors.Heart_check(arg1, arg2))
-
-    # You have to pass the function as a reference, not call it over here. Not sensors.Heart_check(), 
-    # because this is passing the return value not the function
-    # which is none in this case.
-    
-    users.create_user_list()
-    sensors.scheduling(1, users)
-    
     while True:
-
+        print("Yes")
         schedule.run_pending()
         time.sleep(1)
 
-        if keyboard.is_pressed('a'):
-            print(users.user1)
-            exit(0)
-    
+# MAIN EXECUTION BLOCK
+
+@app.route("/")
+def home():
+    t = threading.Thread(target=run_schedule, daemon=True).start()
+    return render_template("index.html", data=users.user1)
+
+@app.route("/data")
+def data():
+    print("Sending data")
+    return jsonify(users.user1)
+
+"""Get continuous data from different devices."""
+
+users = user()
+sensors = sensors_interface()
+users.create_user_list()
+sensors.scheduling(1, users)
 
 # ENTRY POINT
 if __name__ == "__main__": # Whether certain code should run when the script is executed directly, versus when it is imported as a module into another script.
-    main()
+    app.run(debug=True, use_reloader=False)
+    # run_schedule()
 
 
 

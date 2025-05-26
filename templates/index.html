@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live BPM</title>
+</head>
+<body>
+    <h1>Heart Rate Monitor</h1>
+    <p>Live BPM data: <span id="bpm-data">Loading...</span></p>
+
+    <script>
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched data:", data); // ✅ Check browser console
+                    document.getElementById('bpm-data').innerText = data.join(', ');
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        setInterval(fetchData, 1000);  // Fetch every 1 second
+        fetchData();  // Run immediately
+    </script>
+</body>
+</html>
