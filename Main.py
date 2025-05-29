@@ -56,12 +56,12 @@ class sensors_interface:
         self.check_bpm = int(self.check_ecg[0])
         #self.parameter_check(120, 80, self.check_bpm, "Heart Rate")
         users.user1.append(self.check_bpm)
-        print(users.user1)
+        # print(users.user1)
 
 def run_schedule():
 
     while True:
-        print("Yes")
+        # print("Yes")
         schedule.run_pending()
         time.sleep(1)
 
