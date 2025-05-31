@@ -191,3 +191,15 @@ After this, the server's fingerprint will be saved in your ~/.ssh/known_hosts fi
 
 Let me know if you want to confirm the GitHub fingerprint before proceeding (for security).
 
+- 1. {{ }} is Jinja2 syntax, not raw HTML
+
+    Jinja2 is the templating engine used by Flask.
+
+    It allows you to write Python-like expressions inside HTML files.
+
+2. url_for() is a Flask function, not HTML
+
+    It's used to generate URLs dynamically.
+
+    In this case, it finds the correct path to your static JavaScript file.
+
