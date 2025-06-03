@@ -7,24 +7,53 @@ function fetchData() {
                     let bpmDisplay = document.getElementById('bpm-data'); // Get html element with id 'bpm-data'
                     
                     if (count == 0) {
-                        bpmDisplay.innerText = " ";
+                        bpmDisplay.innerHTML = " ";
                     } // Erase "Loading..." text in element
 
-                    // Append only the new data
-                    for (let i = count; i < data.length; i++) {               
-                        // document.getElementById('bpm-data').innerText = data.join(', ');
-                        if (count == 0) {
-                            bpmDisplay.innerText += 'ID: ' + data[i] + '\n Live BPM Data:'; // Display ID on first line and bpm feed on next line
-                        }
-                        else {
-                            bpmDisplay.innerText += ' ' + data[i] + ','; // Display bpm list data
-                        }
-                    }
+                    let displayValue = check_value(data);
+                    bpmDisplay.innerHTML += displayValue; // Update the live data text
 
-                    count = data.length; // Ensure new data is appended
+                    
+
+
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
+
+function check_value(data) {
+
+    let return_text = "";
+
+    // Append only the new data
+    for (let i = count; i < data.length; i++) {               
+    // document.getElementById('bpm-data').innerText = data.join(', ');
+        if (count == 0) {
+            return_text +=  `ID: ${data[i]}</br>`
+            return_text += "Live BPM Data: "; // Display ID on first line and bpm feed on next line
+        }
+        else {
+            
+            if(data[i] > 120) {
+                //return_text +=  ' ' + data[i].fontcolor("red") + ','; // Display bpm list data
+                return_text +=   `<span style="color:red">${data[i]}</span>, `;
+            }
+            else if (data[i] < 80) {
+                // return_text +=  ' ' + data[i].fontcolor("orange") + ','; // Display bpm list data
+                return_text +=   `<span style="color:orange">${data[i]}</span>, `;
+            }
+            else {
+                return_text +=  ' ' + data[i] + ','; // Display bpm list data
+            }
+        }
+    }
+
+    count = data.length; // Ensure new data is appended
+    return return_text
+}
+
+function plot_chart() {
+
+}
 
 let count = 0;
 setInterval(fetchData, 1000);  // Fetch every 1 second
