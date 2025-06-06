@@ -29,7 +29,10 @@ class UserManager:
         sensors.scheduling(1, self.user_id)
         self.user_id += 1
 
-
+    def get_user_data(self, uid):
+        # print(self.users_info[uid])
+        return self.users_info[uid] if uid in self.users_info else []
+    
 
 
 class sensors_interface:
@@ -44,22 +47,15 @@ class sensors_interface:
     def scheduling(self, time, uid):
         schedule.every(time).seconds.do(lambda: self.sensor_check(uid)) #lambda returns function reference
 
-    def parameter_check(self, max, min, para, type):
-        if para < min:
-            print(f"{para}: Warning! {type} lowering!!")
-        elif self.check_bpm > max:
-            print(f"{para}: Warning! {type} too high!!")
-        else:
-            print(f"{para}: {type} Normal.")
-
-
     def sensor_check(self, uid):
 
         # Checking heart rate
         self.check_ecg = self.ecg.generate_ecg()
         self.check_bpm = int(self.check_ecg[0])
-        #self.parameter_check(120, 80, self.check_bpm, "Heart Rate")
         users.users_info[uid].append(self.check_bpm)
+        
+        # print(users.users_info)
+        # print(users.get_user_data(1))
 
 def run_schedule():
 
@@ -73,12 +69,23 @@ def run_schedule():
 @app.route("/")
 def home():
     t = threading.Thread(target=run_schedule, daemon=True).start()
-    return render_template("index.html", data=users.user1)
+    return render_template("index.html", data=users.get_user_data)
 
-@app.route("/data")
-def data():
-    print("Sending data")
-    return jsonify(users.user1)
+# @app.route("/data")
+# def data():
+#     print("Sending data")
+#     return jsonify(users.users_info)
+
+@app.route("/add_user")
+def addUser():
+    users.add_user()
+    uid = users.user_id
+    # print("Yes")
+    return jsonify({"user_id": uid})
+
+@app.route("/data/<int:uid>")
+def data(uid):
+    return jsonify(users.get_user_data(uid))
 
 """Get continuous data from different devices."""
 
@@ -88,6 +95,7 @@ sensors = sensors_interface()
 # Testing whether data for two users is getting added. Make sure to add uid to users.add_user
 # users.add_user(1) 
 # users.add_user(2)
+# print(users.get_user_data(1))
 
 
 # ENTRY POINT
