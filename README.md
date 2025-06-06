@@ -203,3 +203,22 @@ Let me know if you want to confirm the GitHub fingerprint before proceeding (for
 
     In this case, it finds the correct path to your static JavaScript file.
 
+- The src attribute in an HTML <script> tag can absolutely point to a webpage if that page serves a JavaScript file.
+
+In this case:
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+You're telling the browser:
+
+    "Load and execute the JavaScript code that is hosted at this URL."
+
+This is called a Content Delivery Network (CDN) link. It’s a common way to include popular libraries (like Chart.js, jQuery, etc.) without downloading them yourself. The browser fetches the JS file from the URL and uses it like any other script.
+Advantages:
+
+    No need to download or serve the file yourself.
+
+    Often faster due to CDN caching.
+
+    Great for quick prototyping or simple projects.
+

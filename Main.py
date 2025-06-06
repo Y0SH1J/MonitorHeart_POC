@@ -16,17 +16,21 @@ app = Flask(__name__)
 
 # CLASSES
 
-class user:
+class UserManager:
 
     def __init__(self):
 
-        #Dummy user 1
-        self.user_id_1 = 1
+        self.user_id = 1
+        self.users_info = {}
         
-    def create_user_list(self):
+    def add_user(self):
 
-        #Dummy user 1
-        self.user1 = [self.user_id_1]
+        self.users_info[self.user_id] = []
+        sensors.scheduling(1, self.user_id)
+        self.user_id += 1
+
+
+
 
 class sensors_interface:
 
@@ -37,8 +41,8 @@ class sensors_interface:
         self.check_ecg = []
         self.check_bpm = 0
 
-    def scheduling(self, time, user):
-        schedule.every(time).seconds.do(lambda: self.sensor_check(time, user)) #lambda returns function reference
+    def scheduling(self, time, uid):
+        schedule.every(time).seconds.do(lambda: self.sensor_check(uid)) #lambda returns function reference
 
     def parameter_check(self, max, min, para, type):
         if para < min:
@@ -49,14 +53,13 @@ class sensors_interface:
             print(f"{para}: {type} Normal.")
 
 
-    def sensor_check(self, time, user):
+    def sensor_check(self, uid):
 
         # Checking heart rate
         self.check_ecg = self.ecg.generate_ecg()
         self.check_bpm = int(self.check_ecg[0])
         #self.parameter_check(120, 80, self.check_bpm, "Heart Rate")
-        users.user1.append(self.check_bpm)
-        # print(users.user1)
+        users.users_info[uid].append(self.check_bpm)
 
 def run_schedule():
 
@@ -79,15 +82,18 @@ def data():
 
 """Get continuous data from different devices."""
 
-users = user()
+users = UserManager()
 sensors = sensors_interface()
-users.create_user_list()
-sensors.scheduling(1, users)
+
+# Testing whether data for two users is getting added. Make sure to add uid to users.add_user
+# users.add_user(1) 
+# users.add_user(2)
+
 
 # ENTRY POINT
 if __name__ == "__main__": # Whether certain code should run when the script is executed directly, versus when it is imported as a module into another script.
-    app.run(debug=True, use_reloader=False)
-    # run_schedule()
+    # app.run(debug=True, use_reloader=False)
+    run_schedule()
 
 
 
