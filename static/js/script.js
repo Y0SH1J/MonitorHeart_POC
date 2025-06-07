@@ -15,7 +15,7 @@ function createUserDisplay(uid) {
     div.innerHTML = `
         <h3>User ${uid}</h3>
         <canvas id="chart-${uid}" width="400" height="200"></canvas>
-        <p id="bpm-${uid}">Loading...</p>
+        <p id="bpm-${uid}">Live BPM: Loading...</p>
     `;
     container.appendChild(div);
 
@@ -55,9 +55,29 @@ function createUserDisplay(uid) {
                 }
                 count = data.length;
                 bpmChart.update();
-                bpmText.innerText = "Live BPM: " + data[data.length - 1];
+
+                if (data.length == 0) {
+                    bpmText.innerText = "Live BPM: Loading..." // The array is empty initially, to ensure that "undefined" doesn't get displayed.
+                }
+                else if (data[data.length-1] < 80){
+                    if (data.length == 1){
+                        bpmText.innerText = "Live BPM: ";
+                    }
+                    bpmText.innerHTML += `<span style="color:red">${data[data.length - 1]}</span>, `;
+                }
+                else if (data[data.length-1] > 120){
+                    if (data.length == 1){
+                        bpmText.innerText = "Live BPM: ";
+                    }
+                    bpmText.innerHTML += `<span style="color:orange">${data[data.length - 1]}</span>, `;
+                }
+                else{
+                    if (data.length == 1){
+                        bpmText.innerText = "Live BPM: ";
+                    }
+                    bpmText.innerHTML += data[data.length - 1] + ", ";
+                }
+                
             });
     }, 1000);
 }
-
-let userCount = 0;

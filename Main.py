@@ -27,7 +27,6 @@ class UserManager:
 
         self.users_info[self.user_id] = []
         sensors.scheduling(1, self.user_id)
-        self.user_id += 1
 
     def get_user_data(self, uid):
         # print(self.users_info[uid])
@@ -69,7 +68,7 @@ def run_schedule():
 @app.route("/")
 def home():
     t = threading.Thread(target=run_schedule, daemon=True).start()
-    return render_template("index.html", data=users.get_user_data)
+    return render_template("index.html", data=users.get_user_data(0))
 
 # @app.route("/data")
 # def data():
@@ -80,6 +79,7 @@ def home():
 def addUser():
     users.add_user()
     uid = users.user_id
+    users.user_id += 1 # Don't update it in function, otherwise bpm 1 doesn't exist
     # print("Yes")
     return jsonify({"user_id": uid})
 
