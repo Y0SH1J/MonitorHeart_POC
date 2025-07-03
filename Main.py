@@ -40,8 +40,9 @@ class sensors_interface:
 
         #ECG_Heart
         self.ecg = ECG_Heart.ecg_data()
-        self.check_ecg = []
         self.check_bpm = 0
+        self.current_time = ""
+        self.count = 0
 
     def scheduling(self, time, uid):
         schedule.every(time).seconds.do(lambda: self.sensor_check(uid)) #lambda returns function reference
@@ -49,9 +50,10 @@ class sensors_interface:
     def sensor_check(self, uid):
 
         # Checking heart rate
-        self.check_ecg = self.ecg.generate_ecg()
-        self.check_bpm = int(self.check_ecg[0])
-        users.users_info[uid].append(self.check_bpm)
+        self.check_bpm = self.ecg.generate_ecg(self.count)
+        self.count += 1
+        self.current_time = time.ctime(time.time())
+        users.users_info[uid].append((self.current_time.split(" ")[4], self.check_bpm))
         
         # print(users.users_info)
         # print(users.get_user_data(1))
@@ -61,7 +63,7 @@ def run_schedule():
     while True:
         # print("Yes")
         schedule.run_pending()
-        time.sleep(1)
+        time.sleep(0.2)
 
 # MAIN EXECUTION BLOCK
 

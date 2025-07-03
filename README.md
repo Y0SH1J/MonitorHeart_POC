@@ -222,3 +222,78 @@ Advantages:
 
     Great for quick prototyping or simple projects.
 
+- Issue : There are duplicates being printed. Turns out that the setInterval() function (In script.js) and the schedule.run_pending() time.sleep(1) function in the Main.py file are causing a race around condition.
+
+🧨 What's Happening:
+⚙️ 1. Python: schedule.run_pending() + time.sleep(1)
+
+    This executes the scheduled task (like generating new BPM data) once per second.
+
+    Let's say every 1 second, your sensor appends one new BPM value to a list for a user.
+
+🌐 2. JavaScript: setInterval(..., 1000)
+
+    This fetches the data from the server every 1 second and updates the chart and display.
+
+🔁 Problem: Timing Overlap
+
+When both are synced too closely, this happens:
+
+    At t = 2s, your Python sensor adds BPM = 90
+
+    At the same t = 2s, the JavaScript fetch() call triggers, getting the updated array (now including 90)
+
+    But in the next second, if your fetch() happens slightly after the next sensor update (due to processing lag, network latency, etc.), you may receive two values instead of one, or catch a partially updated list
+
+    This can lead to:
+
+        Duplicated BPM values displayed
+
+        Skipped values
+
+        Out-of-sync chart vs. text
+
+        Appended old data repeatedly, especially if you’re tracking count and misalign due to a race condition
+
+So what i did is just compare the time stamps and ensure that duplicates don't get printed, because the time stamps associated with the bpm remains the same throughout (the issue is being mainly caused by the js code, not the backend).
+
+- What’s happening in each case?
+✅ bpmAnomalySimulation (without parentheses)
+
+You're passing a reference to the function, which tells the browser:
+
+    "When this button is clicked, call this function."
+
+So the function is called only when the event happens (on click), which is what you want.
+❌ bpmAnomalySimulation() (with parentheses)
+
+You're calling the function immediately, at the time of setting up the listener — not when the button is clicked.
+
+And whatever value that function returns (probably undefined) is what gets passed to addEventListener. So you're effectively doing this:
+
+anomalyButton.addEventListener("click", undefined); // <-- No function left to run
+
+So:
+
+    The function runs once immediately.
+
+    After that, there's no click handler left attached.
+
+    So nothing happens when you click the button.
+
+🧠 Rule of Thumb
+
+    Never use parentheses when passing a function to addEventListener.
+
+Unless you're using an anonymous function, like this:
+
+anomalyButton.addEventListener("click", () => bpmAnomalySimulation(uid));
+
+This is okay if you want to pass parameters or wrap something custom.
+✅ Correct Examples
+
+// Simple reference
+element.addEventListener("click", myFunction);
+
+// Anonymous wrapper if passing arguments
+element.addEventListener("click", () => myFunction(42));
