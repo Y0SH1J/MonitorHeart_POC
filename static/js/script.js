@@ -10,19 +10,26 @@ function addUser() {
 
 function createUserDisplay(uid) {
     const container = document.getElementById("user-containers");
-
     const div = document.createElement("div");
     div.innerHTML = `
         <h3>User ${uid}</h3>
         <canvas id="chart-${uid}" width="400" height="200"></canvas>
         <p id="bpm-${uid}">Live BPM: Loading...</p>
-        <button id="anomaly-${uid}">Anomaly</button>
+        <button id="anomalyStart-${uid}">Generate Anomaly</button>
+        <button id="anomalyStop-${uid}">Stop Anomaly</button>
     `;
     container.appendChild(div);
 
     const ctx = document.getElementById(`chart-${uid}`).getContext('2d');
-    const anomalyButton = document.getElementById(`anomaly-${uid}`);
-    anomalyButton.addEventListener("click", bpmAnomalySimulation); //Simulate different bpm anomolies
+
+    // Generating the anomaly
+    const anomalyButtonGenerate = document.getElementById(`anomalyStart-${uid}`);
+    anomalyButtonGenerate.addEventListener("click", generateAnomalyClicked); //Simulate different bpm anomolies
+
+    //Stop generating the anomaly
+    const anomalyButtonStop = document.getElementById(`anomalyStop-${uid}`);
+    anomalyButtonStop.addEventListener("click", stopAnomalyClicked); //Stop the stimulation
+
     const bpmChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -50,11 +57,18 @@ function createUserDisplay(uid) {
     let ts, ts_old, ts_new = "";
     let bpm = 0;
     let flag = false;
+
     setInterval(() => {
         fetch(`/data/${uid}`)
             .then(res => res.json())
             .then(data => {
                 const bpmText = document.getElementById(`bpm-${uid}`);
+
+                if (anomalyButtonClicked) {
+
+                    console.log(`Clicked for ${uid}`);
+                }
+
                 for (let i = count; i < data.length; i++) {
                     bpmChart.data.labels.push(i);
                     ts = data[i][0];
@@ -67,6 +81,7 @@ function createUserDisplay(uid) {
                 // Check for duplicate entries
                 ts_old = ts_new;
                 ts_new = ts;
+                              
 
                 if (data.length == 0) {
                     bpmText.innerText = "Live BPM: Loading..." // The array is empty initially, to ensure that "undefined" doesn't get displayed.
@@ -98,13 +113,35 @@ function createUserDisplay(uid) {
                         bpmText.innerHTML += bpm + ", ";
                     }
                 }
-                
+                               
             });
     }, 200);
 
-    function bpmAnomalySimulation() {
+    function generateAnomalyClicked() {
 
-        console.log(`Working...for ${uid}`);
+        anomalyButtonClicked = true;
+        fetch('/add_user', {
+
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({anomalyButtonClicked})
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("POST:", anomalyButtonClicked);
+        });
+
+    };
+
+    function stopAnomalyClicked() {
+
+        if (anomalyButtonClicked){
+            anomalyButtonClicked = false;
+            console.log("Ended anomaly generation");
+        };
+        
+
     };
 };
 
+let anomalyButtonClicked = false;

@@ -5,7 +5,7 @@ import ECG_Heart
 import threading
 import schedule #A simple to use API for scheduling jobs, made for humans
 import time
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 
 # GLOBAL CONSTANTS
@@ -25,14 +25,25 @@ class UserManager:
         
     def add_user(self):
 
-        self.users_info[self.user_id] = []
-        sensors.scheduling(1, self.user_id)
+        sensor = sensors_interface()
+        """
+
+        Creating a fresh object of the sensors_interface class for the new user.
+        This means the object now has its own independent variables, like:
+        - self.count → starts at 0 for this user
+        - self.ecg → a new ECG_Heart.ecg_data() instance
+        No overlap or sharing with other users.
+
+        """
+        self.users_info[self.user_id] = {
+            "data": [],
+            "sensor": sensor # "sensor": sensor stores the sensor object inside the user’s data so you can manage data collection individually for each user.
+        }
+        sensor.scheduling(1, self.user_id)
 
     def get_user_data(self, uid):
         # print(self.users_info[uid])
-        return self.users_info[uid] if uid in self.users_info else []
-    
-
+        return self.users_info[uid]["data"] if uid in self.users_info else []   
 
 class sensors_interface:
 
@@ -53,7 +64,7 @@ class sensors_interface:
         self.check_bpm = self.ecg.generate_ecg(self.count)
         self.count += 1
         self.current_time = time.ctime(time.time())
-        users.users_info[uid].append((self.current_time.split(" ")[4], self.check_bpm))
+        users.users_info[uid]["data"].append((self.current_time.split(" ")[3], self.check_bpm))
         
         # print(users.users_info)
         # print(users.get_user_data(1))
@@ -77,13 +88,22 @@ def home():
 #     print("Sending data")
 #     return jsonify(users.users_info)
 
-@app.route("/add_user")
+@app.route("/add_user", methods=['GET', 'POST'])
 def addUser():
-    users.add_user()
-    uid = users.user_id
-    users.user_id += 1 # Don't update it in function, otherwise bpm 1 doesn't exist
-    # print("Yes")
-    return jsonify({"user_id": uid})
+
+    if request.method == 'GET':
+        users.add_user()
+        uid = users.user_id
+        users.user_id += 1 # Don't update it in function, otherwise bpm 1 doesn't exist
+        # print("Yes")
+        return jsonify({"user_id": uid})
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        print("POST data received:", data)
+        # Now we need to somehow generate the anomaly values over here. Might have to change the code a little.
+        return jsonify({"message": "POST request processed", "status": "success"})
+
 
 @app.route("/data/<int:uid>")
 def data(uid):
@@ -92,7 +112,7 @@ def data(uid):
 """Get continuous data from different devices."""
 
 users = UserManager()
-sensors = sensors_interface()
+# sensors = sensors_interface()
 
 # Testing whether data for two users is getting added. Make sure to add uid to users.add_user
 # users.add_user(1) 
@@ -106,6 +126,14 @@ if __name__ == "__main__": # Whether certain code should run when the script is 
     run_schedule()
 
 
+"""
+    "sensor" : sensor continuation
+    eg. users.users_info[uid]["sensor"].sensor_check(uid)
+    This allows:
+    Each user to have their own sensor instance.
+    You to manage or customize sensor behavior per user, e.g., scheduling frequency, state tracking, etc.
+
+"""
 
 
 # Modules installed

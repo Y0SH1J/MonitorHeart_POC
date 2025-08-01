@@ -297,3 +297,5 @@ element.addEventListener("click", myFunction);
 
 // Anonymous wrapper if passing arguments
 element.addEventListener("click", () => myFunction(42));
+
+- In JavaScript, setInterval() is a built-in function used to repeatedly execute a specified function or code block at fixed time intervals. It continues to run until explicitly stopped using clearInterval(). This function is commonly used for tasks requiring periodic execution, such as creating timers, animating elements, or refreshing data on a web page

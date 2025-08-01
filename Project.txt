@@ -1,0 +1,96 @@
+✅ Your Current Plan — Why It’s Strong:
+🔹 Frontend:
+
+    Add Users dynamically — scalable user interface ✔️
+
+    Live Heartbeat Chart — real-time visualization ✔️
+
+    Anomaly Injection Button — simulates real-world irregularities ✔️
+
+    Per-user display — handles multiple data streams ✔️
+
+🔹 Backend:
+
+    Heartbeat Data Stream per User — emulates device feed ✔️
+
+    Anomaly Detection Logic — triggers conditionally ✔️
+
+    Storing Data with SQL — ensures persistence and future querying ✔️
+
+    Endpoints for each user — supports frontend flexibility ✔️
+
+🧱 Suggested Structure
+
+Here’s how you can build this out further step-by-step:
+1. User Management (Backend & DB)
+
+    Table: Users — id, name, created_at, etc.
+
+    Table: Heartbeats — user_id, timestamp, bpm, anomaly_type
+
+    API: /add_user, /data/<uid>, /inject_anomaly/<uid>
+
+2. Data Generation & Anomaly Simulation
+
+Use:
+
+    neurokit2 or
+
+    [wfdb with MIT-BIH data]
+
+For each user:
+
+    Stream normal BPM from a simulator or dataset
+
+    On "Anomaly" button press → inject a PAC/PVC (as you’re doing)
+
+3. Analysis Pipeline
+
+Backend functions to:
+
+    Detect BPM spikes/drops
+
+    Classify anomalies (e.g. PVC, Tachycardia, etc.)
+
+    Store analysis messages in a table like HealthEvents
+
+Optional:
+
+    Use [scikit-learn] or [tsfresh] later for anomaly detection
+
+4. Frontend Dashboard Enhancements
+
+    Display:
+
+        Live BPM
+
+        Recent Anomalies
+
+        Summary Analysis
+
+    Add:
+
+        Download data CSV
+
+        Patient notes/comments
+
+        ECG waveform view (with canvas or D3)
+
+🛠️ Technologies You’re Already Using
+Component	Tech
+Backend	Python, Flask
+Frontend	HTML, JS, Chart.js
+Realtime Tasks	schedule, threading
+ECG Simulation	neurokit2, wfdb
+Database	SQL (SQLite, PostgreSQL, etc.)
+🌱 Future Extensions
+Feature	Benefit
+Authentication / Login	Security
+Alert System	Notify if BPM crosses thresholds
+Historical Trends	Compare user data over days/weeks
+RESTful API	Connect external devices or apps
+Mobile View	Progressive Web App frontend
+
+
+
+Optimize - When adding new user, it is a little slow. Need to optimize this.

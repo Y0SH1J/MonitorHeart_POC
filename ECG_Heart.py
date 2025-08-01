@@ -25,6 +25,17 @@ class ecg_data:
         # self.signals = self.signals[:self.fs*10]
         self.heart_rate = self.signals[count]
         return self.heart_rate
+    
+    def generate_anomaly(self):
+        
+        self.random_rate = random.randint(20, 200)
+        self.ecg = nk.ecg_simulate(duration=15, sampling_rate=1000, heart_rate=self.random_rate)
+        self.signals, self.info = nk.ecg_process(self.ecg, sampling_rate=1000)
+        #print(self.info.keys()) - Debugging to find ECG_Rate which is changed
+        #print(self.signals.keys())
+        
+        self.heart_rate = self.signals["ECG_Rate"]
+        return self.heart_rate
 
 # MAIN EXECUTION BLOCK
 def main():
