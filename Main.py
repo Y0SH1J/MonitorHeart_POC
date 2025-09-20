@@ -65,8 +65,11 @@ class sensors_interface:
         self.count += 1
         self.current_time = time.ctime(time.time())
         users.users_info[uid]["data"].append((self.current_time.split(" ")[3], self.check_bpm))
-        
+    
         # print(users.users_info)
+        # print(self.current_time)
+        # print(self.current_time.split(" ")[3])
+        # print(self.current_time.split(" ")[4])
         # print(users.get_user_data(1))
 
 def run_schedule():
@@ -142,3 +145,4 @@ if __name__ == "__main__": # Whether certain code should run when the script is 
 # pip install Flask
 # pip install PyWavelets
 # pip install schedule
+# pip install wfdb

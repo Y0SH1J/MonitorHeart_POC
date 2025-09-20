@@ -9,6 +9,8 @@ function addUser() {
 }
 
 function createUserDisplay(uid) {
+    let anomalyButtonClicked = false;
+
     const container = document.getElementById("user-containers");
     const div = document.createElement("div");
     div.innerHTML = `
@@ -63,7 +65,6 @@ function createUserDisplay(uid) {
             .then(res => res.json())
             .then(data => {
                 const bpmText = document.getElementById(`bpm-${uid}`);
-
                 if (anomalyButtonClicked) {
 
                     console.log(`Clicked for ${uid}`);
@@ -81,6 +82,7 @@ function createUserDisplay(uid) {
                 // Check for duplicate entries
                 ts_old = ts_new;
                 ts_new = ts;
+                // console.log(ts_old + ts_new);
                               
 
                 if (data.length == 0) {
@@ -144,4 +146,4 @@ function createUserDisplay(uid) {
     };
 };
 
-let anomalyButtonClicked = false;
+
